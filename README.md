@@ -6,7 +6,10 @@ This code leverages support for the DSP hardware to perform fast math ops and FF
 function returns a refactored input buffer size which is always equal to or larger than the
 fft_samples. A new buffer should be created with the refactored length and padded with 0.0f after the
 end of the samples: | N samples | padded with 0.0 |.
-4) Call 'fft.compute(float *source_bufr, float *output_bufr);' to convert source data (audio or ???). The
+4) Call 'fft.compute(float *source_bufr, float *output_bufr);' to convert float source data (audio or ???). The
 results of the FFT are written to 'output_bufr'.
+5) Frequency bin is calculated by dividing the sample rate by the fft_size. Example: 16000 (sample rate) / 
+512 (fft_size) yields 31.25 Hz for each successive point in the output_bufr. If there is a peak value at
+offset 32, this equates to energy at 1000 Hz. 
 
 

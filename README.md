@@ -2,7 +2,8 @@
 The library provides functions to implement a very fast FFT specifically on the ESP32-S3 MCU with PSRAM.
 These functions are similar to the popular **arduinoFFT** but are several times faster due
 to the ESP32-S3 DSP support. 
-PSRAM is required to implement several external and internal buffers.
+
+Hardware support: ESP32-S3 MCU with PSRAM.
 
 ## Usage:
 1) Copy the two files to your project source folder and add #include **esp32s3_fft.h** to your header file.
@@ -10,15 +11,22 @@ PSRAM is required to implement several external and internal buffers.
 2) In your main code instanciate the library: **ESP32S3_FFT fft**;
 
 3) To prepare for an FFT operation, call **fft.init(fft_size, fft_samples)**. * *fft_size* * is typically 512
-and the size must be in powers of 2. * *fft_samples* * are the number of time domain samples to be converted to frequency domain.  
-The **fft.init()** function returns a value representing the number of samples plus any extra overlap. The value is always
-equal to or larger than the original fft_samples. A sample input buffer (source_bufr) should be created with this refactored length and
-filled with the samples to be converted. Any space beyond the samples should be padded with 0.0f.
+and the size must be in powers of 2. * *fft_samples* * are the number of time domain samples to be converted to frequency domain.
+Input data samples can be of arbitrary length but FFT results improve as the number of samples is a multiple of the fft_size.
+The **fft.init()** function returns a pointer to a structure containing parameters for allocating input & output buffers. 
 
-4) Call __fft.compute(float *source_bufr, float *output_bufr);__ to convert source data (audio or ???). The
+5) Call __fft.compute(float *source_bufr, float *output_bufr);__ to convert source data (audio or ???). The
 results of the FFT are written to 'output_bufr'.
 
-5) Frequency bins (FFT frequency resolution) are calculated by dividing the sample rate by the fft_size. Example: 16000 (sample rate) / 
-512 (fft_size) yields 31.25 Hz for each successive point in the output_bufr. If there is a peak value at
-offset 32, this equates to energy at 1000 Hz. 
 
+## Spectral Output Options
+FFT data can be processed and returned in three different ways:
+
+1) SPECTRAL AVERAGE - FFT data is returned to the output buffer with a length of fft_size (typically 512 samples).
+The resulting data is the rolling average of all transforms across the input data.
+
+2) SPECTRAL NO SLIDING - FFT data is returned in multiple blocks with a 100% sliding overlap. The output buffer
+should be allocated by multiplying the number of fft windows * fft_size. 
+   
+3) SPECTRAL SLIDING - FFT data is returned using a sliding window with a 50% overlap. The output buffer
+should be allocated by multiplying the number of fft windows * fft_size. 

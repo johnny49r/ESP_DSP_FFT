@@ -32,3 +32,5 @@ The resulting data is the rolling average of all transforms across the input dat
 2) SPECTRAL NO SLIDING - FFT data is returned in multiple blocks without sliding window overlap. 
    
 3) SPECTRAL SLIDING - FFT data is returned using a sliding window with a 50% overlap. 
+
+Google "FFT sliding window" for an explaination of the technique.

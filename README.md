@@ -1,7 +1,7 @@
 # Fast FFT function library for the ESP32-S3 MCU.
 The library provides functions to implement a very fast FFT specifically on the ESP32-S3 MCU with PSRAM.
-These functions are similar to the popular **arduinoFFT** but are several times faster due
-to the ESP32-S3 DSP support. 
+These functions are similar to the popular **arduinoFFT** but are many times faster due to the 
+ESP32-S3 DSP support. 
 
 Hardware support: ESP32-S3 MCU with PSRAM.
 
@@ -10,24 +10,27 @@ Hardware support: ESP32-S3 MCU with PSRAM.
 
 2) In your main code instanciate the library: **ESP32S3_FFT fft**;
 
-3) To prepare for an FFT operation, call **fft.init(fft_size, fft_samples, spectral_output)**. * ***fft_size*** * is typically 512
-and the size must be in powers of 2. ***fft_samples*** are the number of time domain samples to be converted to frequency domain.
-Input data samples can be of arbitrary length but FFT results improve if the number of samples is a multiple of the fft_size.
+3) To prepare for an FFT operation, call **fft.init(fft_size, fft_samples, spectral_output)**. * ***fft_size*** * is typically 512 but
+can be any value in powers of 2; Example: 128, 256, 512, 1024... 
+***fft_samples*** are the number of time domain samples to be converted to frequency domain.
+Input data samples can be of arbitrary length but FFT accuracy improves if the number of samples is a even multiple of **fft_size**.
 For info on **spectral_output** options, see below.
 The **fft.init()** function returns a pointer to a fft_table_t structure containing parameters for allocating input & output buffers.
 
 4) Call __fft.compute(float *source_bufr, float *output_bufr);__ to convert source data (audio or ???). The
-results of the FFT are written to **output_bufr**.
+results of the FFT are written to **output_bufr**. 
 
 ## FFT Table Structure
+- num_original_samples: This is the same as the **fft_samples** parameter of the init() function.
 - size_input_bufr: Allocate this number of SAMPLES for the data input buffer.
-- num_sliding_frames: Allocate the output buffer in PSRAM using the formula: num_sliding_frames * fft_size * sizeof(float). 
+- num_sliding_frames: Allocate the output buffer in PSRAM using the formula: num_sliding_frames * fft_size * sizeof(float).
+- hop_size: The size of the sliding window (normally 50% of the **fft_size**.
 
 ## Spectral Output Options
 FFT data can be processed and returned in three different ways:
 
-1) SPECTRAL AVERAGE - FFT data is returned to the output buffer (always fft_size samples).
-The resulting data is the rolling average of all transforms across the input data using 50% sliding window.
+1) SPECTRAL AVERAGE - FFT data is returned to the output buffer whose legnth is equal to 'fft_size'.
+The resulting data is the average of all transforms across the input data using a 50% sliding window.
 
 2) SPECTRAL NO SLIDING - FFT data is returned in multiple blocks without sliding window overlap. 
    

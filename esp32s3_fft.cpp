@@ -196,3 +196,40 @@ float ESP32S3_FFT::calcFreqBin(float sample_rate_hz, float fft_size)  // return 
 {
    return (sample_rate_hz / fft_size);
 }
+
+
+/**
+ * @brief Low Pass Filter Class - Wrapper for the ESP32-S3 DSP IIR filter features
+ */
+// empty constructor
+ESP32S3_LP_FILTER::ESP32S3_LP_FILTER(void) { }
+
+// destructor
+ESP32S3_LP_FILTER::~ESP32S3_LP_FILTER(void) { }
+
+
+/********************************************************************
+ * @brief Initialize the low pass filter. Call this once on first time 
+ * use or when the filter parameters have changed.
+ * @param cutoff_freq - Freq where filter has attenuated the data down
+ * to -3db. Note that using a higher Q factor will cause the -3db freq
+ * to move to a higher frequency.
+ * @param sample_rate - Audio sample rate - default 16KHz
+ * @param Qfactor - 0.5 (default) <smoother cutoff rate>, 1.0 <sharper cutoff rate>
+ */
+void ESP32S3_LP_FILTER::init(float cutoff_freq, float sample_rate, float Qfactor)
+{
+   dsps_biquad_gen_lpf_f32((float *)&coeffs, cutoff_freq / sample_rate, Qfactor); // nominal cutoff rate
+}
+
+
+/********************************************************************
+ * @brief Apply LP filter to the data.
+ * @param input - ptr to the input float data.
+ * @param output - ptr to the output float data.
+ * @param len - number of float samples to process.
+ */
+void ESP32S3_LP_FILTER::apply(float *input, float *output, uint32_t len) 
+{
+   dsps_biquad_f32_aes3(input, output, len, coeffs, delay_line);
+}

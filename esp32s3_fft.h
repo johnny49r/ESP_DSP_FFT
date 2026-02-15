@@ -29,6 +29,7 @@ enum {
    SPECTRAL_SLIDING,                     // output 50% sliding fft - output is 50% larger than input
 };
 
+// Table created during FFT init
 typedef struct {
    uint32_t num_original_samples;
    uint32_t size_input_bufr;              // number of samples for fft input buffer
@@ -56,4 +57,17 @@ class ESP32S3_FFT {
       float *hann_window;                 // hann window to reduce spurious freq at start & end of input data
       float *fft_buffer;                  // internal working buffer for real & imaginary FFT values
       float *fft_output;                  // averaged FFT - same size as fft block
+};
+
+
+class ESP32S3_LP_FILTER {
+   public:
+      ESP32S3_LP_FILTER(void);
+      ~ESP32S3_LP_FILTER(void);  
+      void init(float cutoff_freq=0.0, float sample_rate=16000.0, float Qfactor=0.5);
+      void apply(float *input, float *output, uint32_t len);
+
+   private:
+      float coeffs[5];
+      float delay_line[2] = {0,0};
 };

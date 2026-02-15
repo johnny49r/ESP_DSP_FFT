@@ -3,7 +3,9 @@ The ESP32-S3 is an enhanced member of the ESP32 family that incorporates hardwar
 Processing (DSP). This library builds on those capabilities to provide efficient, real-time audio signal-processing 
 primitives, including FFT-based spectral analysis and low-pass IIR filtering for embedded applications.
 
-These library functions are used extensively in the **Watt-IZ** project found here: https://github.com/johnny49r/watt-iz.
+These library functions are used extensively in the **Watt-IZ** speech enabled project found here: https://github.com/johnny49r/watt-iz.
+<br>
+<br>
 
 ## Fast Fourier Transform (FFT) Library for the ESP32-S3
 This library provides an efficient and ESP32-S3–optimized interface for performing Fast Fourier Transforms (FFT) on audio data. 
@@ -12,7 +14,6 @@ performance and memory usage are critical.
 Compared to generic Arduino-based FFT implementations (such as arduinoFFT), this library leverages the ESP32-S3’s DSP 
 acceleration and floating-point hardware to achieve significantly higher performance, particularly when processing larger
 FFT sizes or continuous audio streams.
-
 
 Hardware support: ESP32-S3 MCU with PSRAM.
 
@@ -49,6 +50,8 @@ The resulting data is the average of all transforms across the input data using 
 
 Google "FFT sliding window" for an explaination of the technique.
 
+<br>
+
 ## Low-Pass IIR Audio Filter Library for the ESP32-S3
 This library provides a low-pass audio filtering implementation for the ESP32-S3 based on the ESP-DSP IIR (biquad) filter functions.
 It is designed for real-time audio processing and encapsulates coefficient generation and filter state management for streaming use cases.
@@ -62,6 +65,11 @@ suitable for audio preprocessing tasks such as noise reduction and signal condit
 
 3) Initialize the filter behaviour by calling "lp_filter.init(cutoff_freq, sample_rate, Qfactor)" where **cutoff_freq** is the desired
 -3db attenuation frequency, example: 3300. **sample_rate** is the base signal sampling frequency in Hz, example: 16000. And
-Qfactor is the 
+**Qfactor** controls the damping of the filter around its cutoff frequency.
+The init() command should be called once before using the filter or anytime filter parameters are changed.
+
+4) Filtering is applied by calling **lp_filter.apply(input, output, length)** where **input** is a pointer to the users buffer containing
+the raw float data. **output** is a pointer to a buffer that will contain filtered data. **length** is the number of float values
+to filter.
 
 

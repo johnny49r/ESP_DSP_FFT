@@ -50,6 +50,10 @@ The resulting data is the average of all transforms across the input data using 
 
 Google "FFT sliding window" for an explaination of the technique.
 
+### A Simple Example of a Sinewave Represented After FFT
+<img width="600" height="421" alt="image" src="https://github.com/user-attachments/assets/300d5dd9-5163-4efa-be26-9d893a8ee201" />
+
+
 <br>
 
 ## Low-Pass IIR Audio Filter Library for the ESP32-S3

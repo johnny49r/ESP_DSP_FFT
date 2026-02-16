@@ -40,6 +40,11 @@ ESP32S3_FFT::~ESP32S3_FFT(void)
  *       fft will be implemented with a 50% overlap. @note : total_samples should
  *       be an even multiple of 'fft_size'.
  * @return Pointer to a fft_table_t structure. If no memory available, returns NULL.
+ *
+ * @note *** Internal buffers are allocated in PSRAM. If your ESP32 variant does 
+ * not contain PSRAM, internal buffers may be allocated in SRAM using the following
+ * example:
+ * hann_window = (float *) heap_caps_malloc(_fft_size * sizeof(float), MALLOC_CAP_INTERNAL | MALLOC_CAP_32BIT);
  */
 fft_table_t * ESP32S3_FFT::init(uint32_t fft_size, uint32_t fft_samples, uint8_t spectral_select)
 {
@@ -98,6 +103,8 @@ fft_table_t * ESP32S3_FFT::init(uint32_t fft_size, uint32_t fft_samples, uint8_t
    for (int i = 0; i < _fft_size; i++) {
       hann_window[i] = 0.5 * (1.0 - cos(2.0 * PI * i / (_fft_size - 1)));
    }     
+
+   // Create output table
    fft_table.num_original_samples = _original_samples;
    fft_table.hop_size = _hop_size;
    fft_table.num_sliding_frames = _num_sliding_frames;

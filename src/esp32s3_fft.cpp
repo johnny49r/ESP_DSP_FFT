@@ -205,7 +205,7 @@ float ESP32S3_FFT::calcFreqBin(float sample_rate_hz, float fft_size)  // return 
 }
 
 
-/**
+/*********************************************************************
  * @brief Low Pass Filter Class - Wrapper for the ESP32-S3 DSP IIR filter features
  */
 // empty constructor

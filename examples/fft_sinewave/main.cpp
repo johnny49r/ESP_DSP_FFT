@@ -41,12 +41,21 @@ void setup(void)
 
   /*
    * The FFT output_bufr should now consist of frequency bins with a spacing of sample_rate / FFT_size.
-   * Example: 16000 / 1024 == 15.625 Hz / freq bin.
+   * Example: 16000 / 1024 == 15.625 Hz per freq bin.
    * For real-valued signals, only the first half of the FFT output buffer (up to the Nyquist frequency)
    * contains unique frequency information (0 - 8 KHz). The 2nd half of the buffer is morrored data from the
    * first half.
    * 
    */
+
+  // Simple plot function to dump values to the console
+  for(int i=0; i<FFT_SIZE/2; i++) {    // Print freq bins from DC to Nyquist freq (8 KHz)
+    if(i > 0 && i % 10 == 0)
+      Serial.println("");
+    int16_t sample = int(output_bufr[i]);
+    Serial.printf("%d ", sample);
+  }
+  Serial.println("");
   // When finished with the FFT lib, call end() to deallocate memory.
   fft.end();
 }

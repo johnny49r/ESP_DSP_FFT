@@ -51,9 +51,15 @@ The resulting data is the average of all transforms across the input data using 
 Google "FFT sliding window" for an explaination of the technique.
 
 ### A Simple Example of a Sinewave Represented After FFT
+The example below shows a plot of a 1000 Hz sinewave signal. The sinewave signal is digitized and is input to the FFT processor.
+The output plot demonstrates that all the energy of the input signal is at 1 KHz. Each data point of the FFT output is a
+frequency bin whose value is determined by the formula AUDIO_SAMPLE_RATE / FFT_SIZE. In the image example, each FFT bin is
+15.625 Hz. The first bin in the output represents DC, the second bin is 15.625 Hz, the third bin is 31.25 Hz, and so on.
+Bin 64 should contain the peak of the energy at 1 KHz (64 * 15.625 = 1000).
+
 <img width="600" height="421" alt="image" src="https://github.com/user-attachments/assets/300d5dd9-5163-4efa-be26-9d893a8ee201" />
 
-
+<br>
 <br>
 
 ## Low-Pass IIR Audio Filter Library for the ESP32-S3

@@ -73,7 +73,9 @@ Special attention is given to the relationship between cutoff frequency and Q fa
 suitable for audio preprocessing tasks such as noise reduction and signal conditioning.
 Using the library functions it becomes easy to add various signal filtering to your audio pipeline.
 
-![Filter Response Demo](/images/20260217_111345.jpg)
+The image below is from a demo project on ESP32-S3 hardware that can be found here: https://github.com/johnny49r/watt-iz
+
+![Filter Response Demo](/images/watt_iz_fft_demo.jpg)
 
 ## Filter Type Descriptions
 ### Low-Pass Filter

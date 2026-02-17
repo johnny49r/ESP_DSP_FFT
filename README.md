@@ -72,7 +72,8 @@ It is designed for real-time audio processing and encapsulates coefficient gener
 Special attention is given to the relationship between cutoff frequency and Q factor, making the filter behavior predictable and 
 suitable for audio preprocessing tasks such as noise reduction and signal conditioning.
 Using the library functions it becomes easy to add various signal filtering to your audio pipeline.
-/images/watt-iz-fft.jpg
+
+![Filter Response Demo](/images/20260217_111345.jpg)
 
 ## Filter Type Descriptions
 ### Low-Pass Filter

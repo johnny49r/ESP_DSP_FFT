@@ -1,26 +1,30 @@
 # ESP32-S3 DSP Function Library
 The ESP32-S3 is an enhanced member of the ESP32 family that incorporates hardware features optimized for Digital Signal 
 Processing (DSP). This library builds on those capabilities to provide efficient, real-time audio signal-processing 
-primitives, including FFT-based spectral analysis and low-pass IIR filtering for embedded applications.
+primitives, including FFT-based spectral analysis and IIR (biquad) signal filtering for embedded applications.
 
-These library functions are used extensively in the **Watt-IZ** speech enabled project found here: https://github.com/johnny49r/watt-iz.
+These library functions are used extensively in the **Watt-IZ** speech enabled project found here: **https://github.com/johnny49r/watt-iz**
 <br>
 <br>
 
 ## Fast Fourier Transform (FFT) Library for the ESP32-S3
-This library provides an efficient and ESP32-S3–optimized interface for performing Fast Fourier Transforms (FFT) on audio data. 
-It is built on top of the ESP-DSP library and is designed for real-time, streaming audio applications where predictable 
+A Fast Fourier Transform (FFT) converts a time-domain signal into its frequency-domain representation, 
+allowing analysis of how signal energy is distributed across frequencies.
+
+On the ESP32-S3, this can be done efficiently using the built-in DSP instructions exposed by Espressif’s 
+ESP-DSP library, designed for real-time, streaming audio applications where predictable 
 performance and memory usage are critical.
+
 Compared to generic Arduino-based FFT implementations (such as arduinoFFT), this library leverages the ESP32-S3’s DSP 
 acceleration and floating-point hardware to achieve significantly higher performance, particularly when processing larger
 FFT sizes or continuous audio streams.
 
-Hardware support: ESP32-S3 MCU with PSRAM.
+Hardware supported: ESP32-S3 MCU with PSRAM.
 
-### Usage:
-1) Copy the two files to your project source folder and add **#include esp32s3_fft.h** to your header file.
+### FFT Library Usage:
+1) Copy the two files in the /src directory to your project source folder and add **#include esp32s3_dsp.h** to your header file.
 
-2) In your main code instanciate the library: **ESP32S3_FFT fft**;
+2) In your main code instanciate the FFT library class: **ESP32S3_FFT fft**;
 
 3) To prepare for an FFT operation, call **fft.init(fft_size, fft_samples, spectral_output)**. * ***fft_size*** * is typically 512 but
 can be any value in powers of 2; Example: 128, 256, 512, 1024... 
@@ -29,7 +33,7 @@ Input data samples can be of arbitrary length but FFT accuracy improves if the n
 For info on **spectral_output** options, see below.
 The **fft.init()** function returns a pointer to a fft_table_t structure containing parameters for allocating input & output buffers.
 
-4) Call __fft.compute(float *source_bufr, float *output_bufr);__ to convert source data (audio or ???). The
+4) Call **fft.compute(float \*source_bufr, float \*output_bufr);** to convert source data (audio or ???). The
 results of the FFT are written to **output_bufr**. 
 
 ### FFT Table Structure
@@ -62,24 +66,43 @@ Bin 64 should contain the peak of the energy at 1 KHz (64 * 15.625 = 1000).
 <br>
 <br>
 
-## Low-Pass IIR Audio Filter Library for the ESP32-S3
-This library provides a low-pass audio filtering implementation for the ESP32-S3 based on the ESP-DSP IIR (biquad) filter functions.
+## Audio Filter Library for the ESP32-S3
+This library provides several audio filter implementations for the ESP32-S3 based on the ESP-DSP IIR (biquad) filter functions.
 It is designed for real-time audio processing and encapsulates coefficient generation and filter state management for streaming use cases.
 Special attention is given to the relationship between cutoff frequency and Q factor, making the filter behavior predictable and 
 suitable for audio preprocessing tasks such as noise reduction and signal conditioning.
+Using the library functions it becomes easy to add various signal filtering to your audio pipeline.
 
-### Usage:
-1) Copy the two files to your project source folder and add **#include esp32s3_fft.h** to your header file.
+## Filter Type Descriptions
+### Low-Pass Filter
+A low-pass filter allows frequencies below the cutoff frequency to pass while attenuating higher frequencies. It is commonly used to remove high-frequency noise, smooth signals, or limit bandwidth before further processing.
 
-2) In your main code instanciate the library: **ESP32S3_LP_FILTER lp_filter**;
+### High-Pass Filter
+A high-pass filter allows frequencies above the cutoff frequency to pass while attenuating lower frequencies. It is often used to remove DC offset, suppress low-frequency rumble, or isolate higher-frequency signal content.
 
-3) Initialize the filter behaviour by calling "lp_filter.init(cutoff_freq, sample_rate, Qfactor)" where **cutoff_freq** is the desired
--3db attenuation frequency, example: 3300. **sample_rate** is the base signal sampling frequency in Hz, example: 16000. And
-**Qfactor** controls the damping of the filter around its cutoff frequency.
+### Band-Pass Filter
+A band-pass filter allows frequencies within a defined frequency band to pass while attenuating frequencies below and above that range. The band is defined by a center frequency and bandwidth (or Q factor), making it useful for isolating specific signal regions such as voice or sensor resonances.
+
+### Notch (Band-Stop) Filter
+A notch filter strongly attenuates a narrow frequency band around a specified center (notch) frequency, while leaving most other frequencies unaffected. It is commonly used to suppress interference such as power-line hum or tonal noise.
+
+### Peaking (Bell) Filter
+A peaking (bell) filter selectively boosts or attenuates a narrow frequency band around a center frequency, with the bandwidth controlled by the Q factor. Unlike band-pass or notch filters, frequencies outside the affected band return to unity gain, making it ideal for equalization and spectral shaping.
+
+
+## Filter Library Usage:
+1) Copy the two files in the /src directory to your project source folder and add **#include esp32s3_dsp.h** to your header file.
+
+2) In your main code instanciate the desired filter library class such as: **ESP32S3_LP_FILTER lp_filter**;
+
+3) Initialize the filter behaviour by calling **lp_filter.init(cutoff_freq, sample_rate, Qfactor)** where **cutoff_freq** is the desired
+-3db attenuation frequency in Hz, example: 3300. **sample_rate** is the base signal sampling frequency in Hz, example: 16000.
+**Qfactor** controls the damping of the filter around its cutoff frequency with a range of 0.5 to 1.0.
 The init() command should be called once before using the filter or anytime filter parameters are changed.
+Note that Notch and Bell filters have an additional parameter **gain_db** which controls the gain of the attenuation (notch) or peak above 0db (bell).
 
 4) Filtering is applied by calling **lp_filter.apply(input, output, length)** where **input** is a pointer to the users buffer containing
-the raw float data. **output** is a pointer to a buffer that will contain filtered data. **length** is the number of float values
+the raw float data. **output** is a pointer to a buffer that will contain the filtered data. **length** is the number of float values
 to filter.
 
 

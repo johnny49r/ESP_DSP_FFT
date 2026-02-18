@@ -142,3 +142,52 @@ class ESP32S3_BELL_FILTER {
       float coeffs[5];
       float delay_line[2] = {0,0};
 };
+
+
+/** #################################################################
+ * @brief Low shelf Filter Class
+ * A low-shelf boosts or attenuates frequencies below a corner frequency:
+ *    Below f₀ → gain ≈ G (in dB)
+ *    Above f₀ → gain → 0 dB
+ *    Around f₀ → smooth transition (controlled by slope/Q)
+ * @param corner_freq - shelf transition frequency (Hz)
+ * @param sample_rate - audio sample rate (Hz)
+ * @param gain_db - shelf gain in dB (negative = cut, positive = boost)
+ * @param Qfactor - shelf slope / sharpness (≈ 0.5–1.0 typical)
+ */
+class ESP32S3_LOW_SHELF_FILTER {
+   public:
+      ESP32S3_LOW_SHELF_FILTER(void);
+      ~ESP32S3_LOW_SHELF_FILTER(void);  
+      void init(float corner_freq=3000.0, float sample_rate=16000.0, float gain_db=6.0, float Qfactor=0.707);
+      void apply(float *input, float *output, uint32_t len);
+
+   private:
+      float coeffs[5];
+      float delay_line[2] = {0,0};
+};
+
+
+/** #################################################################
+ * @brief High shelf Filter Class
+ * 
+ * A high-shelf boosts or attenuates frequencies above a corner frequency 
+ * Above f₀ → gain ≈ G
+ * Below f₀ → gain → 0 dB
+ * Around f₀ → smooth transition
+ * @param corner_freq - shelf transition frequency (Hz)
+ * @param sample_rate - audio sample rate (Hz)
+ * @param gain_db - shelf gain in dB (negative = cut, positive = boost)
+ * @param Qfactor - shelf slope / sharpness (≈ 0.5–1.0 typical)
+ */
+class ESP32S3_HIGH_SHELF_FILTER {
+   public:
+      ESP32S3_HIGH_SHELF_FILTER(void);
+      ~ESP32S3_HIGH_SHELF_FILTER(void);  
+      void init(float corner_freq=3000.0, float sample_rate=16000.0, float gain_db=6.0, float Qfactor=0.707);
+      void apply(float *input, float *output, uint32_t len);
+
+   private:
+      float coeffs[5];
+      float delay_line[2] = {0,0};
+};

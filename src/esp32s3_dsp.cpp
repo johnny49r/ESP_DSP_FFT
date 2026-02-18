@@ -359,6 +359,7 @@ ESP32S3_BELL_FILTER::~ESP32S3_BELL_FILTER(void) { } // destructor
  */
 void ESP32S3_BELL_FILTER::init(float center_freq, float sample_rate, float gain_db, float Qfactor)
 {
+   // To implement gain in the peaking filter, coordinates are manually generated 
    const float w0 = 2.0f * (float)M_PI * (center_freq / sample_rate);
    const float cw = cosf(w0);
    const float sw = sinf(w0);
@@ -390,6 +391,74 @@ void ESP32S3_BELL_FILTER::init(float center_freq, float sample_rate, float gain_
  * @param len - number of float samples to process.
  */
 void ESP32S3_BELL_FILTER::apply(float *input, float *output, uint32_t len) 
+{
+   dsps_biquad_f32_aes3(input, output, len, coeffs, delay_line);
+}
+
+
+// ##################################################################
+//                LOW SHELF FILTER CLASS FUNCTIONS 
+// ##################################################################
+
+ESP32S3_LOW_SHELF_FILTER::ESP32S3_LOW_SHELF_FILTER(void) { } // empty constructor
+
+ESP32S3_LOW_SHELF_FILTER::~ESP32S3_LOW_SHELF_FILTER(void) { } // destructor
+
+/********************************************************************
+ * @brief Initialize the low shelf filter. Call this once on first time 
+ * use or when the filter parameters have changed.
+ * @param corner_freq - Freq of peak attenuated. Default = 3 KHz.
+ * @param sample_rate - Audio sample rate - default 16KHz
+ * @param notch_gain - gain in the notch band in DB, default -20dB
+ * @param Qfactor - 0.5 (default) <smoother cutoff rate>, 1.0 <sharper cutoff rate>
+ */
+void ESP32S3_LOW_SHELF_FILTER::init(float corner_freq, float sample_rate, float gain_db, float Qfactor)
+{
+   dsps_biquad_gen_lowShelf_f32((float *)&coeffs, corner_freq / sample_rate, gain_db, Qfactor); // nominal cutoff rate
+}
+
+
+/********************************************************************
+ * @brief Apply low shelf filter to the data.
+ * @param input - ptr to the input float data.
+ * @param output - ptr to the output float data.
+ * @param len - number of float samples to process.
+ */
+void ESP32S3_LOW_SHELF_FILTER::apply(float *input, float *output, uint32_t len) 
+{
+   dsps_biquad_f32_aes3(input, output, len, coeffs, delay_line);
+}
+
+
+// ##################################################################
+//                HIGH SHELF FILTER CLASS FUNCTIONS 
+// ##################################################################
+
+ESP32S3_HIGH_SHELF_FILTER::ESP32S3_HIGH_SHELF_FILTER(void) { } // empty constructor
+
+ESP32S3_HIGH_SHELF_FILTER::~ESP32S3_HIGH_SHELF_FILTER(void) { } // destructor
+
+/********************************************************************
+ * @brief Initialize the low shelf filter. Call this once on first time 
+ * use or when the filter parameters have changed.
+ * @param corner_freq - Freq of peak attenuated. Default = 3 KHz.
+ * @param sample_rate - Audio sample rate - default 16KHz
+ * @param notch_gain - gain in the notch band in DB, default -20dB
+ * @param Qfactor - 0.5 (default) <smoother cutoff rate>, 1.0 <sharper cutoff rate>
+ */
+void ESP32S3_HIGH_SHELF_FILTER::init(float corner_freq, float sample_rate, float gain_db, float Qfactor)
+{
+   dsps_biquad_gen_highShelf_f32((float *)&coeffs, corner_freq / sample_rate, gain_db, Qfactor); // nominal cutoff rate
+}
+
+
+/********************************************************************
+ * @brief Apply low shelf filter to the data.
+ * @param input - ptr to the input float data.
+ * @param output - ptr to the output float data.
+ * @param len - number of float samples to process.
+ */
+void ESP32S3_HIGH_SHELF_FILTER::apply(float *input, float *output, uint32_t len) 
 {
    dsps_biquad_f32_aes3(input, output, len, coeffs, delay_line);
 }

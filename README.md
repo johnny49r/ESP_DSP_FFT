@@ -93,6 +93,13 @@ A notch filter strongly attenuates a narrow frequency band around a specified ce
 ### Peaking (Bell) Filter
 A peaking (bell) filter selectively boosts or attenuates a narrow frequency band around a center frequency, with the bandwidth controlled by the Q factor. Unlike band-pass or notch filters, frequencies outside the affected band return to unity gain, making it ideal for equalization and spectral shaping.
 
+### Low Shelf Filter
+A low-shelf filter boosts or attenuates frequencies below a corner frequency with the transition bandwidth controlled by the Q factor. 
+Think “Turn up / turn down the bass.”.
+
+### High Shelf Filter
+A high-shelf filter boosts or attenuates frequencies above a corner frequency with the transition bandwidth controlled by the Q factor. 
+Think “Turn up / turn down the treble.”
 
 ## Filter Library Usage:
 1) Copy the two files in the /src directory to your project source folder and add **#include esp32s3_dsp.h** to your header file.
